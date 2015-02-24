@@ -32,7 +32,11 @@ module CapybaraPatch
           end
         else
           @server_thread = Thread.new do
-            Capybara.server.call(@middleware, @port)
+            begin
+              Capybara.server.call(@middleware, @port)
+            rescue Exception => exception
+              Thread.main.raise(exception)
+            end
           end
           wait.until do
             @server_thread.join(0.1)
